@@ -112,7 +112,10 @@ struct NoteListView: View {
                         ),
                         onDelete: { viewModel.deleteNote(note) },
                         onToggleCollapse: { viewModel.toggleCollapse(note) },
-                        onTap: { viewModel.selectNote(note) }
+                        onTap: { viewModel.selectNote(note) },
+                        onToggleFloating: { viewModel.toggleFloating(note) },
+                        isFloating: note.isFloating,
+                        defaultEditing: viewModel.isNewNote(note)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
@@ -121,6 +124,14 @@ struct NoteListView: View {
                                 lineWidth: 2
                             )
                     )
+                    .onAppear {
+                        // 便签出现后清除新便签标记
+                        if viewModel.isNewNote(note) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                viewModel.clearNewNoteMark()
+                            }
+                        }
+                    }
                 }
             }
             .padding()

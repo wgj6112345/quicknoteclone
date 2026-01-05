@@ -10,6 +10,7 @@ class NoteListViewModel: ObservableObject {
     @Published var selectedNoteId: UUID?
     @Published var showingDeleteAlert: Bool = false
     @Published var noteToDelete: Note?
+    @Published var newNoteId: UUID?
 
     private let noteService: NoteService
     private var searchCancellable: AnyCancellable?
@@ -43,6 +44,7 @@ class NoteListViewModel: ObservableObject {
                 await MainActor.run {
                     notes.insert(newNote, at: 0)
                     selectedNoteId = newNote.id
+                    newNoteId = newNote.id  // 标记为新创建的便签
                 }
             } catch {
                 print("创建便签失败: \(error.localizedDescription)")
@@ -110,6 +112,24 @@ class NoteListViewModel: ObservableObject {
             notes[index].isCollapsed.toggle()
             updateNote(notes[index])
         }
+    }
+
+    /// 切换便签悬浮状态
+    func toggleFloating(_ note: Note) {
+        if let index = notes.firstIndex(where: { $0.id == note.id }) {
+            notes[index].isFloating.toggle()
+            updateNote(notes[index])
+        }
+    }
+
+    /// 检查是否是新创建的便签
+    func isNewNote(_ note: Note) -> Bool {
+        return note.id == newNoteId
+    }
+
+    /// 清除新便签标记
+    func clearNewNoteMark() {
+        newNoteId = nil
     }
 
     // MARK: - Private Methods

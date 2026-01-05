@@ -6,9 +6,27 @@ struct NoteCard: View {
     let onDelete: () -> Void
     let onToggleCollapse: () -> Void
     let onTap: () -> Void
-
+    let onToggleFloating: () -> Void
+    let isFloating: Bool
+    
     @State private var isHovered = false
-    @State private var isEditing = false
+    @State private var isEditing: Bool
+
+    init(note: Binding<Note>, 
+         onDelete: @escaping () -> Void, 
+         onToggleCollapse: @escaping () -> Void, 
+         onTap: @escaping () -> Void,
+         onToggleFloating: @escaping () -> Void = {},
+         isFloating: Bool = false,
+         defaultEditing: Bool = false) {
+        self._note = note
+        self.onDelete = onDelete
+        self.onToggleCollapse = onToggleCollapse
+        self.onTap = onTap
+        self.onToggleFloating = onToggleFloating
+        self.isFloating = isFloating
+        self._isEditing = State(initialValue: defaultEditing)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -30,6 +48,14 @@ struct NoteCard: View {
                 // 操作按钮(悬停时显示)
                 if isHovered {
                     HStack(spacing: 4) {
+                        // 悬浮置顶按钮
+                        Button(action: onToggleFloating) {
+                            Image(systemName: isFloating ? "pin.fill" : "pin")
+                                .font(.system(size: 12))
+                                .foregroundColor(isFloating ? .accentColor : .secondary)
+                        }
+                        .buttonStyle(.borderless)
+                        
                         Button(action: { isEditing.toggle() }) {
                             Image(systemName: isEditing ? "checkmark" : "pencil")
                                 .font(.system(size: 12))
@@ -58,7 +84,7 @@ struct NoteCard: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background(Color(nsColor: .controlBackgroundColor))
+            .background(isFloating ? Color.accentColor.opacity(0.1) : Color(nsColor: .controlBackgroundColor))
 
             // 内容区域
             if !note.isCollapsed {
@@ -81,14 +107,17 @@ struct NoteCard: View {
         .background(Color(nsColor: .windowBackgroundColor))
         .cornerRadius(8)
         .shadow(
-            color: Color.black.opacity(isHovered ? 0.15 : 0.1),
-            radius: isHovered ? 4 : 2,
+            color: Color.black.opacity(isFloating ? 0.25 : (isHovered ? 0.15 : 0.1)),
+            radius: isFloating ? 8 : (isHovered ? 4 : 2),
             x: 0,
-            y: isHovered ? 2 : 1
+            y: isFloating ? 4 : (isHovered ? 2 : 1)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.accentColor.opacity(isHovered ? 0.3 : 0), lineWidth: isHovered ? 2 : 0)
+                .stroke(
+                    isFloating ? Color.accentColor : Color.accentColor.opacity(isHovered ? 0.3 : 0),
+                    lineWidth: isFloating ? 2 : (isHovered ? 2 : 0)
+                )
         )
         .onHover { hovering in
             withAnimation(.easeOut(duration: 0.1)) {

@@ -27,6 +27,7 @@ struct Note: Identifiable, Codable, Equatable {
     var createdAt: Date
     var updatedAt: Date
     var isCollapsed: Bool
+    var isFloating: Bool
     var color: NoteColor?
 
     init(
@@ -36,6 +37,7 @@ struct Note: Identifiable, Codable, Equatable {
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
         isCollapsed: Bool = false,
+        isFloating: Bool = false,
         color: NoteColor? = nil
     ) {
         self.id = id
@@ -44,6 +46,7 @@ struct Note: Identifiable, Codable, Equatable {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.isCollapsed = isCollapsed
+        self.isFloating = isFloating
         self.color = color
     }
 
