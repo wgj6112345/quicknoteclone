@@ -40,38 +40,14 @@ struct NoteListView: View {
 
     private var toolbar: some View {
         HStack {
-            // 搜索栏
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.secondary)
-
-                TextField("搜索便签...", text: $viewModel.searchText)
-                    .textFieldStyle(.plain)
-                    .font(.body)
-
-                if !viewModel.searchText.isEmpty {
-                    Button(action: { viewModel.searchText = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.secondary)
-                    }
-                    .buttonStyle(.borderless)
-                }
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color(nsColor: .textBackgroundColor))
-            )
-
-            Spacer()
-
             // 新建便签按钮
             Button(action: viewModel.createNote) {
                 Label("新建便签", systemImage: "plus")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 12, weight: .medium))
             }
             .buttonStyle(.borderedProminent)
+            
+            Spacer()
         }
         .padding()
         .background(Color(nsColor: .controlBackgroundColor))

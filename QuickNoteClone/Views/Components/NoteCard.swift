@@ -11,6 +11,8 @@ struct NoteCard: View {
     
     @State private var isHovered = false
     @State private var isEditing: Bool
+    
+    @StateObject private var floatingService = FloatingNoteService.shared
 
     init(note: Binding<Note>, 
          onDelete: @escaping () -> Void, 
@@ -48,8 +50,17 @@ struct NoteCard: View {
                 // 操作按钮(悬停时显示)
                 if isHovered {
                     HStack(spacing: 4) {
-                        // 悬浮置顶按钮
-                        Button(action: onToggleFloating) {
+                        // 悬浮置顶按钮 - 打开独立窗口
+                        Button(action: {
+                            if isFloating {
+                                onToggleFloating()
+                            } else {
+                                // 打开独立悬浮窗口
+                                FloatingNoteService.shared.showFloatingNote(note) { updatedNote in
+                                    note = updatedNote
+                                }
+                            }
+                        }) {
                             Image(systemName: isFloating ? "pin.fill" : "pin")
                                 .font(.system(size: 12))
                                 .foregroundColor(isFloating ? .accentColor : .secondary)

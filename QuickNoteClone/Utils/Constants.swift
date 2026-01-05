@@ -22,12 +22,12 @@ enum Constants {
 
     /// 窗口相关
     enum Window {
-        static let minWidth: CGFloat = 300
-        static let minHeight: CGFloat = 400
-        static let maxWidth: CGFloat = 800
-        static let maxHeight: CGFloat = 1200
-        static let defaultWidth: CGFloat = 400
-        static let defaultHeight: CGFloat = 600
+        static let minWidth: CGFloat = 200
+        static let minHeight: CGFloat = 300
+        static let maxWidth: CGFloat = 600
+        static let maxHeight: CGFloat = 900
+        static let defaultWidth: CGFloat = 280
+        static let defaultHeight: CGFloat = 400
         static let defaultPosition = CGPoint(x: 100, y: 100)
     }
 

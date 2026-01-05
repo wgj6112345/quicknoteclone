@@ -5,7 +5,6 @@ import Combine
 @MainActor
 class NoteListViewModel: ObservableObject {
     @Published var notes: [Note] = []
-    @Published var searchText: String = ""
     @Published var isLoading: Bool = false
     @Published var selectedNoteId: UUID?
     @Published var showingDeleteAlert: Bool = false
@@ -13,13 +12,11 @@ class NoteListViewModel: ObservableObject {
     @Published var newNoteId: UUID?
 
     private let noteService: NoteService
-    private var searchCancellable: AnyCancellable?
     private var saveCancellables = [UUID: AnyCancellable]()
 
     init(noteService: NoteService = .shared) {
         self.noteService = noteService
         loadNotes()
-        setupSearch()
     }
 
     // MARK: - Public Methods
@@ -133,22 +130,4 @@ class NoteListViewModel: ObservableObject {
     }
 
     // MARK: - Private Methods
-
-    private func setupSearch() {
-        searchCancellable = $searchText
-            .debounce(for: .milliseconds(Int(Constants.Performance.maxSearchDelay * 1000)), scheduler: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.performSearch()
-            }
-    }
-
-    private func performSearch() {
-        Task {
-            if searchText.isEmpty {
-                notes = await noteService.getAllNotes()
-            } else {
-                notes = await noteService.searchNotes(query: searchText)
-            }
-        }
-    }
 }
