@@ -45,47 +45,47 @@ struct NoteCard: View {
 
                 // 操作按钮(悬停时显示)
                 if isHovered {
-                    HStack(spacing: 6) {
+                    HStack(spacing: 2) {
                         // 悬浮置顶按钮 - 打开独立窗口
                         Button(action: {
                             onToggleFloating()
                         }) {
                             Image(systemName: isFloating ? "pin.fill" : "pin")
-                                .font(.system(size: 14))
+                                .font(.system(size: 11))
                                 .foregroundColor(isFloating ? .white : .secondary)
-                                .frame(width: 36, height: 36)
+                                .frame(width: 24, height: 24)
                                 .background(isFloating ? Color.accentColor : Color(nsColor: .controlBackgroundColor))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .clipShape(RoundedRectangle(cornerRadius: 4))
                         }
                         .buttonStyle(.plain)
 
                         Button(action: { isEditing.toggle() }) {
                             Image(systemName: isEditing ? "checkmark" : "pencil")
-                                .font(.system(size: 14))
+                                .font(.system(size: 11))
                                 .foregroundColor(.secondary)
-                                .frame(width: isEditing ? 40 : 36, height: isEditing ? 40 : 36)
+                                .frame(width: isEditing ? 28 : 24, height: isEditing ? 28 : 24)
                                 .background(Color(nsColor: .controlBackgroundColor))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .clipShape(RoundedRectangle(cornerRadius: 4))
                         }
                         .buttonStyle(.plain)
 
                         Button(action: onToggleCollapse) {
                             Image(systemName: note.isCollapsed ? "chevron.down" : "chevron.up")
-                                .font(.system(size: 14))
+                                .font(.system(size: 11))
                                 .foregroundColor(.secondary)
-                                .frame(width: 36, height: 36)
+                                .frame(width: 24, height: 24)
                                 .background(Color(nsColor: .controlBackgroundColor))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .clipShape(RoundedRectangle(cornerRadius: 4))
                         }
                         .buttonStyle(.plain)
 
                         Button(action: onDelete) {
                             Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 14))
+                                .font(.system(size: 11))
                                 .foregroundColor(.secondary)
-                                .frame(width: 36, height: 36)
+                                .frame(width: 24, height: 24)
                                 .background(Color(nsColor: .controlBackgroundColor))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .clipShape(RoundedRectangle(cornerRadius: 4))
                         }
                         .buttonStyle(.plain)
                     }

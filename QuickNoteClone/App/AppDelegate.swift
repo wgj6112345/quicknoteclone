@@ -26,8 +26,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menuBarManager = MenuBarManager.shared
         menuBarManager?.setMainWindow(mainWindow)
 
-        // 隐藏 Dock 图标
-        NSApp.setActivationPolicy(.accessory)
+        // 在 Dock 栏显示应用图标
+        NSApp.setActivationPolicy(.regular)
 
         print("QuickNote Clone 启动完成")
     }
