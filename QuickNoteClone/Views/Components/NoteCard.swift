@@ -11,8 +11,6 @@ struct NoteCard: View {
     
     @State private var isHovered = false
     @State private var isEditing: Bool
-    
-    @StateObject private var floatingService = FloatingNoteService.shared
 
     init(note: Binding<Note>, 
          onDelete: @escaping () -> Void, 
@@ -38,57 +36,58 @@ struct NoteCard: View {
                     .font(.system(size: 16))
                     .foregroundColor(.secondary)
 
-                TextField("标题", text: $note.title)
-                    .textFieldStyle(.plain)
+                Text(note.displayTitle)
                     .font(.headline)
-                    .lineLimit(1)
                     .foregroundColor(.primary)
-                    .disabled(!isEditing)
+                    .lineLimit(1)
 
                 Spacer()
 
                 // 操作按钮(悬停时显示)
                 if isHovered {
-                    HStack(spacing: 4) {
+                    HStack(spacing: 6) {
                         // 悬浮置顶按钮 - 打开独立窗口
                         Button(action: {
-                            if isFloating {
-                                onToggleFloating()
-                            } else {
-                                // 打开独立悬浮窗口
-                                FloatingNoteService.shared.showFloatingNote(note) { updatedNote in
-                                    note = updatedNote
-                                }
-                            }
+                            onToggleFloating()
                         }) {
                             Image(systemName: isFloating ? "pin.fill" : "pin")
-                                .font(.system(size: 12))
-                                .foregroundColor(isFloating ? .accentColor : .secondary)
+                                .font(.system(size: 14))
+                                .foregroundColor(isFloating ? .white : .secondary)
+                                .frame(width: 36, height: 36)
+                                .background(isFloating ? Color.accentColor : Color(nsColor: .controlBackgroundColor))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
-                        .buttonStyle(.borderless)
-                        
+                        .buttonStyle(.plain)
+
                         Button(action: { isEditing.toggle() }) {
                             Image(systemName: isEditing ? "checkmark" : "pencil")
-                                .font(.system(size: 12))
+                                .font(.system(size: 14))
                                 .foregroundColor(.secondary)
+                                .frame(width: isEditing ? 40 : 36, height: isEditing ? 40 : 36)
+                                .background(Color(nsColor: .controlBackgroundColor))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
-                        .buttonStyle(.borderless)
-                        .scaleEffect(isEditing ? 1.2 : 1.0)
-                        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isEditing)
+                        .buttonStyle(.plain)
 
                         Button(action: onToggleCollapse) {
                             Image(systemName: note.isCollapsed ? "chevron.down" : "chevron.up")
-                                .font(.system(size: 12))
+                                .font(.system(size: 14))
                                 .foregroundColor(.secondary)
+                                .frame(width: 36, height: 36)
+                                .background(Color(nsColor: .controlBackgroundColor))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
-                        .buttonStyle(.borderless)
+                        .buttonStyle(.plain)
 
                         Button(action: onDelete) {
                             Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 12))
+                                .font(.system(size: 14))
                                 .foregroundColor(.secondary)
+                                .frame(width: 36, height: 36)
+                                .background(Color(nsColor: .controlBackgroundColor))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
-                        .buttonStyle(.borderless)
+                        .buttonStyle(.plain)
                     }
                     .transition(.opacity.combined(with: .scale(scale: 0.9)))
                 }
@@ -111,6 +110,12 @@ struct NoteCard: View {
                         .foregroundColor(.secondary)
                         .padding(12)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                        .onTapGesture(count: 2) {
+                            withAnimation {
+                                isEditing = true
+                            }
+                        }
                         .transition(.opacity.combined(with: .move(edge: .top)))
                 }
             }

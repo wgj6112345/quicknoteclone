@@ -64,6 +64,20 @@ struct Note: Identifiable, Codable, Equatable {
             throw NoteError.contentTooLong
         }
     }
+    
+    /// 显示标题 (自动提取 content 前 15 个字符)
+    var displayTitle: String {
+        if content.isEmpty {
+            return "新便签"
+        }
+        
+        if content.count <= 15 {
+            return content
+        }
+        
+        let index = content.index(content.startIndex, offsetBy: 15)
+        return String(content[..<index]) + "..."
+    }
 }
 
 /// 便签错误

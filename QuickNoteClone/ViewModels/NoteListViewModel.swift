@@ -114,8 +114,31 @@ class NoteListViewModel: ObservableObject {
     /// 切换便签悬浮状态
     func toggleFloating(_ note: Note) {
         if let index = notes.firstIndex(where: { $0.id == note.id }) {
-            notes[index].isFloating.toggle()
-            updateNote(notes[index])
+            if notes[index].isFloating {
+                // 取消悬浮，关闭悬浮窗口
+                FloatingNoteService.shared.closeFloatingNote(note.id)
+                notes[index].isFloating = false
+                updateNote(notes[index])
+            } else {
+                // 设置为悬浮，从列表中移除并打开悬浮窗口
+                notes[index].isFloating = true
+                var floatingNote = notes[index]
+                notes.remove(at: index)
+
+                // 打开悬浮窗口，关闭时重新添加回列表
+                FloatingNoteService.shared.showFloatingNote(floatingNote) { [weak self] updatedNote in
+                    self?.updateNote(updatedNote)
+                } onClose: { [weak self] in
+                    // 窗口关闭时，取消悬浮状态并重新添加回列表
+                    floatingNote.isFloating = false
+                    // 检查是否已经在列表中，避免重复添加
+                    guard let self = self else { return }
+                    if !self.notes.contains(where: { $0.id == floatingNote.id }) {
+                        self.notes.insert(floatingNote, at: 0)
+                    }
+                    self.updateNote(floatingNote)
+                }
+            }
         }
     }
 

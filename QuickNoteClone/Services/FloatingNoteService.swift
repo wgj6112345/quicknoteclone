@@ -11,33 +11,45 @@ class FloatingNoteService {
     private init() {}
     
     /// 显示悬浮便签窗口
-    func showFloatingNote(_ note: Note, onUpdate: @escaping (Note) -> Void) {
+    func showFloatingNote(_ note: Note, onUpdate: @escaping (Note) -> Void, onClose: @escaping () -> Void = {}) {
         // 如果窗口已存在,显示它
         if let window = floatingWindows[note.id] {
             window.makeKeyAndOrderFront(nil)
             return
         }
-        
-        // 创建新窗口
+
+        // 创建新窗口（无边框样式）
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 300, height: 400),
-            styleMask: [.titled, .closable, .resizable],
+            contentRect: NSRect(x: 0, y: 0, width: 280, height: 400),
+            styleMask: [.borderless, .resizable],
             backing: .buffered,
             defer: false
         )
-        
+
         window.title = note.title
         window.level = .floating
         window.isReleasedWhenClosed = false
         window.isMovableByWindowBackground = true
-        
-        // 设置窗口内容
-        let contentView = FloatingNoteView(note: note, onUpdate: onUpdate)
+        window.backgroundColor = .clear
+        window.minSize = NSSize(width: 280, height: 400)
+        window.maxSize = NSSize(width: 280, height: 400)
+
+        // 设置窗口内容，使用 Binding
+        let contentView = FloatingNoteView(
+            note: Binding(
+                get: { note },
+                set: { newValue in
+                    onUpdate(newValue)
+                }
+            ),
+            onUpdate: onUpdate,
+            onClose: onClose
+        )
         window.contentViewController = NSHostingController(rootView: contentView)
-        
+
         // 居中显示
         window.center()
-        
+
         // 监听窗口关闭
         NotificationCenter.default.addObserver(
             forName: NSWindow.willCloseNotification,
@@ -45,11 +57,12 @@ class FloatingNoteService {
             queue: .main
         ) { [weak self] _ in
             self?.removeFloatingWindow(noteId: note.id)
+            onClose() // 关闭时回调
         }
-        
+
         // 保存窗口引用
         floatingWindows[note.id] = window
-        
+
         // 显示窗口
         window.makeKeyAndOrderFront(nil)
     }
@@ -69,6 +82,11 @@ class FloatingNoteService {
     private func removeFloatingWindow(noteId: UUID) {
         floatingWindows.removeValue(forKey: noteId)
     }
+
+    /// 获取悬浮窗口
+    func getWindow(for noteId: UUID) -> NSWindow? {
+        return floatingWindows[noteId]
+    }
     
     /// 关闭所有悬浮窗口
     func closeAllFloatingNotes() {
@@ -83,52 +101,39 @@ class FloatingNoteService {
 
 /// 悬浮便签视图
 struct FloatingNoteView: View {
-    @State private var note: Note
+    @Binding var note: Note
     let onUpdate: (Note) -> Void
-    
-    init(note: Note, onUpdate: @escaping (Note) -> Void) {
-        self._note = State(initialValue: note)
-        self.onUpdate = onUpdate
-    }
-    
+    let onClose: () -> Void
+
     var body: some View {
-        VStack(spacing: 0) {
-            // 标题栏
-            HStack {
-                TextField("标题", text: $note.title)
-                    .textFieldStyle(.plain)
-                    .font(.headline)
-                    .lineLimit(1)
-                
-                Spacer()
-                
-                Button(action: {
-                    onUpdate(note)
-                }) {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 12))
-                        .foregroundColor(.secondary)
+        NoteCard(
+            note: $note,
+            onDelete: {
+                // 关闭窗口
+                if let window = FloatingNoteService.shared.getWindow(for: note.id) {
+                    window.close()
                 }
-                .buttonStyle(.borderless)
-            }
-            .padding()
-            .background(Color(nsColor: .controlBackgroundColor))
-            
-            Divider()
-            
-            // 内容编辑器
-            VStack(alignment: .leading, spacing: 8) {
-                TextEditor(text: $note.content)
-                    .font(.system(size: 14))
-                    .padding()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-        .onChange(of: note.content) { _, _ in
-            onUpdate(note)
-        }
-        .onChange(of: note.title) { _, _ in
-            onUpdate(note)
+                // 调用 onClose 回调
+                onClose()
+            },
+            onToggleCollapse: {
+                note.isCollapsed.toggle()
+                onUpdate(note)
+            },
+            onTap: {},
+            onToggleFloating: {
+                // 关闭窗口
+                if let window = FloatingNoteService.shared.getWindow(for: note.id) {
+                    window.close()
+                }
+                // 调用 onClose 回调
+                onClose()
+            },
+            isFloating: true,
+            defaultEditing: false
+        )
+        .onChange(of: note) { _, newValue in
+            onUpdate(newValue)
         }
     }
 }

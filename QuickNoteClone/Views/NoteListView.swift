@@ -6,12 +6,7 @@ struct NoteListView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        VStack(spacing: 0) {
-            // 顶部工具栏
-            toolbar
-
-            Divider()
-
+        ZStack(alignment: .bottomTrailing) {
             // 便签列表
             if viewModel.isLoading {
                 loadingView
@@ -20,6 +15,19 @@ struct NoteListView: View {
             } else {
                 notesList
             }
+
+            // 右下角新建按钮
+            Button(action: viewModel.createNote) {
+                Image(systemName: "plus")
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Color.accentColor)
+                    .clipShape(Circle())
+                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+            }
+            .buttonStyle(.plain)
+            .padding(16)
         }
         .frame(minWidth: Constants.Window.minWidth, minHeight: Constants.Window.minHeight)
         .alert("删除便签", isPresented: $viewModel.showingDeleteAlert) {
@@ -37,21 +45,6 @@ struct NoteListView: View {
     }
 
     // MARK: - Subviews
-
-    private var toolbar: some View {
-        HStack {
-            // 新建便签按钮
-            Button(action: viewModel.createNote) {
-                Label("新建便签", systemImage: "plus")
-                    .font(.system(size: 12, weight: .medium))
-            }
-            .buttonStyle(.borderedProminent)
-            
-            Spacer()
-        }
-        .padding()
-        .background(Color(nsColor: .controlBackgroundColor))
-    }
 
     private var loadingView: some View {
         VStack(spacing: 16) {
