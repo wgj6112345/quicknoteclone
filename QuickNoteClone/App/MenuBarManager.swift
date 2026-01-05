@@ -1,5 +1,6 @@
 import AppKit
 import SwiftUI
+import Combine
 
 /// 菜单栏管理器
 @MainActor
@@ -80,18 +81,18 @@ class MenuBarManager: ObservableObject {
         popover?.performClose(nil)
     }
 
-    func createNewNote() {
+    @objc func createNewNote() {
         // TODO: 将在便签管理阶段实现
         print("创建新便签")
         showPopover()
     }
 
-    func openSettings() {
+    @objc func openSettings() {
         // 打开设置窗口
         NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
     }
 
-    func quitApp() {
+    @objc func quitApp() {
         NSApplication.shared.terminate(nil)
     }
 

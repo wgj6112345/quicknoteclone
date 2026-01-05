@@ -16,19 +16,15 @@ class AppViewModel: ObservableObject {
     init(noteService: NoteService = .shared) {
         self.noteService = noteService
 
-        // 加载设置
-        let settings = Task {
-            return await noteService.getSettings()
-        }
-
         // 使用默认值初始化
-        self.appSettings = AppSettings()
-        self.isDarkMode = appSettings.isDarkMode
-        self.isAlwaysOnTop = appSettings.isAlwaysOnTop
+        let defaultSettings = AppSettings()
+        self.appSettings = defaultSettings
+        self.isDarkMode = defaultSettings.isDarkMode
+        self.isAlwaysOnTop = defaultSettings.isAlwaysOnTop
 
         // 异步加载设置
         Task {
-            let loadedSettings = await settings.value
+            let loadedSettings = await noteService.getSettings()
             await MainActor.run {
                 self.appSettings = loadedSettings
                 self.isDarkMode = loadedSettings.isDarkMode

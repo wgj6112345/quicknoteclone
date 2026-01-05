@@ -6,9 +6,9 @@ struct QuickNoteCloneApp: App {
 
     var body: some Scene {
         // 主窗口
-        WindowGroup {
+        WindowGroup(content: {
             NoteListView()
-        }
+        })
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
 

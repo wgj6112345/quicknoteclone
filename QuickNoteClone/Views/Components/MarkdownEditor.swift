@@ -94,7 +94,7 @@ struct MarkdownEditor: View {
 
     private var editorView: some View {
         TextEditor(text: $content)
-            .font(.system(size: 14, family: .monospaced))
+            .font(.system(.body, design: .monospaced))
             .padding(12)
             .focused($isFocused)
             .onTapGesture {

@@ -31,7 +31,7 @@ struct NoteListView: View {
             }
         } message: {
             if let note = viewModel.noteToDelete {
-                Text("确定要删除便签 "\(note.title)"吗?")
+                Text("确定要删除便签 \"\(note.title)\"吗?")
             }
         }
     }
@@ -96,12 +96,17 @@ struct NoteListView: View {
     private var notesList: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach($viewModel.notes) { $note in
+                ForEach(Array(viewModel.notes.enumerated()), id: \.element.id) { index, note in
                     NoteCard(
-                        note: $note,
-                        onDelete: { viewModel.deleteNote(note.wrappedValue) },
-                        onToggleCollapse: { viewModel.toggleCollapse(note.wrappedValue) },
-                        onTap: { viewModel.selectNote(note.wrappedValue) }
+                        note: Binding(
+                            get: { viewModel.notes[index] },
+                            set: { newValue in
+                                viewModel.updateNote(newValue)
+                            }
+                        ),
+                        onDelete: { viewModel.deleteNote(note) },
+                        onToggleCollapse: { viewModel.toggleCollapse(note) },
+                        onTap: { viewModel.selectNote(note) }
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
@@ -110,9 +115,6 @@ struct NoteListView: View {
                                 lineWidth: 2
                             )
                     )
-                    .onChange(of: note.wrappedValue) { _, newValue in
-                        viewModel.updateNote(newValue)
-                    }
                 }
             }
             .padding()

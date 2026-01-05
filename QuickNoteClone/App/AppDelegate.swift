@@ -14,7 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         mainWindow = windowService?.createMainWindow()
 
         // 初始化菜单栏管理器
-        menuBarManager = MenuBarManager()
+        menuBarManager = MenuBarManager.shared
         menuBarManager?.setMainWindow(mainWindow)
 
         // 隐藏 Dock 图标

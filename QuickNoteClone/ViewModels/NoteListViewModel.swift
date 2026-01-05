@@ -116,7 +116,7 @@ class NoteListViewModel: ObservableObject {
 
     private func setupSearch() {
         searchCancellable = $searchText
-            .debounce(for: .milliseconds(Constants.Performance.maxSearchDelay * 1000), scheduler: RunLoop.main)
+            .debounce(for: .milliseconds(Int(Constants.Performance.maxSearchDelay * 1000)), scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 self?.performSearch()
             }
