@@ -1,3 +1,11 @@
+//
+//  SettingsView.swift
+//  QuickNoteClone
+//
+//  Created by Wang Gaojie on 1/5/26.
+//
+
+
 import SwiftUI
 
 /// 设置视图
@@ -155,7 +163,7 @@ struct ShortcutRow: View {
             Spacer()
 
             Text(shortcut)
-                .font(.system(size: 12, family: .monospaced))
+                .font(.system(.body, design: .monospaced))
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
