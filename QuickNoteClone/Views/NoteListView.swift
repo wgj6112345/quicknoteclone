@@ -96,10 +96,16 @@ struct NoteListView: View {
     private var notesList: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(Array(viewModel.notes.enumerated()), id: \.element.id) { index, note in
+                ForEach(viewModel.notes) { note in
                     NoteCard(
                         note: Binding(
-                            get: { viewModel.notes[index] },
+                            get: {
+                                // 通过 ID 查找最新的 note 对象
+                                if let index = viewModel.notes.firstIndex(where: { $0.id == note.id }) {
+                                    return viewModel.notes[index]
+                                }
+                                return note
+                            },
                             set: { newValue in
                                 viewModel.updateNote(newValue)
                             }
