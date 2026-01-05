@@ -7,9 +7,7 @@ struct QuickNoteCloneApp: App {
     var body: some Scene {
         // 主窗口
         WindowGroup {
-            EmptyView()
-            // TODO: 将在便签管理阶段实现主视图
-            // MainView()
+            NoteListView()
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
