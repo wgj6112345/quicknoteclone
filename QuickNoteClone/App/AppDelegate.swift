@@ -13,6 +13,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // 创建主窗口
         mainWindow = windowService?.createMainWindow()
 
+        // 设置窗口内容
+        if let window = mainWindow {
+            let contentView = NoteListView()
+            window.contentViewController = NSHostingController(rootView: contentView)
+            
+            // 显示窗口
+            window.makeKeyAndOrderFront(nil)
+        }
+
         // 初始化菜单栏管理器
         menuBarManager = MenuBarManager.shared
         menuBarManager?.setMainWindow(mainWindow)
