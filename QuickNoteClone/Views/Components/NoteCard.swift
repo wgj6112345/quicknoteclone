@@ -2,12 +2,13 @@ import SwiftUI
 
 /// 便签卡片组件
 struct NoteCard: View {
-    let note: Note
+    @Binding var note: Note
     let onDelete: () -> Void
     let onToggleCollapse: () -> Void
     let onTap: () -> Void
 
     @State private var isHovered = false
+    @State private var isEditing = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -17,15 +18,24 @@ struct NoteCard: View {
                     .font(.system(size: 16))
                     .foregroundColor(.secondary)
 
-                Text(note.title)
+                TextField("标题", text: $note.title)
+                    .textFieldStyle(.plain)
                     .font(.headline)
                     .lineLimit(1)
                     .foregroundColor(.primary)
+                    .disabled(!isEditing)
 
                 Spacer()
 
                 // 操作按钮(悬停时显示)
                 if isHovered {
+                    Button(action: { isEditing.toggle() }) {
+                        Image(systemName: isEditing ? "checkmark" : "pencil")
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.borderless)
+
                     Button(action: onToggleCollapse) {
                         Image(systemName: note.isCollapsed ? "chevron.down" : "chevron.up")
                             .font(.system(size: 12))
@@ -49,11 +59,16 @@ struct NoteCard: View {
             if !note.isCollapsed {
                 Divider()
 
-                Text(note.content)
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .padding(12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                if isEditing {
+                    MarkdownEditor(content: $note.content)
+                        .frame(minHeight: 100)
+                } else {
+                    Text(note.content)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .padding(12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
         }
         .background(Color(nsColor: .windowBackgroundColor))
@@ -69,7 +84,9 @@ struct NoteCard: View {
             }
         }
         .onTapGesture {
-            onTap()
+            if !isEditing {
+                onTap()
+            }
         }
     }
 }

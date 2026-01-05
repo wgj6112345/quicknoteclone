@@ -96,12 +96,12 @@ struct NoteListView: View {
     private var notesList: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(viewModel.notes) { note in
+                ForEach($viewModel.notes) { $note in
                     NoteCard(
-                        note: note,
-                        onDelete: { viewModel.deleteNote(note) },
-                        onToggleCollapse: { viewModel.toggleCollapse(note) },
-                        onTap: { viewModel.selectNote(note) }
+                        note: $note,
+                        onDelete: { viewModel.deleteNote(note.wrappedValue) },
+                        onToggleCollapse: { viewModel.toggleCollapse(note.wrappedValue) },
+                        onTap: { viewModel.selectNote(note.wrappedValue) }
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
@@ -110,6 +110,9 @@ struct NoteListView: View {
                                 lineWidth: 2
                             )
                     )
+                    .onChange(of: note.wrappedValue) { _, newValue in
+                        viewModel.updateNote(newValue)
+                    }
                 }
             }
             .padding()
