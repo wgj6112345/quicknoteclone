@@ -87,8 +87,8 @@ class MenuBarManager: ObservableObject {
     }
 
     func openSettings() {
-        // TODO: 将在应用设置阶段实现
-        print("打开设置")
+        // 打开设置窗口
+        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
     }
 
     func quitApp() {
